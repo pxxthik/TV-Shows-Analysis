@@ -16,7 +16,7 @@ user_menu = st.sidebar.radio(
 )
 
 if user_menu == "Overall Analysis":
-    st.title("Overall TV Show Analysis")
+    st.title("📺 Overall TV Show Analysis")
 
     st.header("🔥 Most Popular TV Shows")
     st.dataframe(overall.popular_tv_shows())
@@ -26,12 +26,12 @@ if user_menu == "Overall Analysis":
     fig = px.pie(df, values='popularity', names='genre_name')
     st.plotly_chart(fig)
 
-    st.header("💁👌 Language Distribution")
+    st.header("💁👌 Top Language Distribution")
     df = overall.language_distribution()
     fig=px.bar(df,x='count',y='spoken_language_name', orientation='h')
     st.plotly_chart(fig)
 
-    st.header("🌐 Network Analysis")
+    st.header("🌐 Top Network Analysis")
     df = overall.network_analysis()
     fig = px.pie(df, values='count', names='network_name', hole=0.4)
     st.plotly_chart(fig)
@@ -41,7 +41,7 @@ if user_menu == "Overall Analysis":
     fig = px.line(df, x="date", y=1, color="genre_name")
     st.plotly_chart(fig)
 
-    st.header("🎌 Origin Country Analysis")
+    st.header("🎌 Top Origin Country Analysis")
     df = overall.origin_country_analysis()
     fig = px.line(df, x="date", y="count", color="origin_country_name")
     st.plotly_chart(fig)
@@ -62,6 +62,6 @@ if user_menu == "Overall Analysis":
     st.plotly_chart(fig)
     
 elif user_menu == "Element-wise Analysis":
-    st.title(user_menu)
+    st.title(f"🛠️ {user_menu}")
 elif user_menu == "Show-wise Analysis":
-    st.title(user_menu)
+    st.title(f"🎭 {user_menu}")
