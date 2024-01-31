@@ -22,3 +22,7 @@ production_countries = pd.read_csv("data/production_countries.csv")
 origin_country_types = pd.read_csv("data/origin_country_types.csv")
 created_by = pd.read_csv("data/created_by.csv")
 created_by_types = pd.read_csv("data/created_by_types.csv")
+links = pd.read_csv("data/links.csv")
+
+def get_posters(df):
+    return links[links['link_type_id'] == 3].merge(df, on='show_id')['link'].values.tolist()

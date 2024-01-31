@@ -3,8 +3,7 @@ import helper
 def popular_tv_shows():
     popular_votes = helper.show_votes[helper.show_votes['vote_count'] > 10000]
     temp = helper.shows.merge(popular_votes, on='show_id').sort_values('popularity', ascending=False).head(12)
-    temp = temp[['name', 'popularity', 'tagline', 'vote_average']]
-    return temp
+    return temp.rename(columns={'number_of_seasons': "seasons"})
 
 def genre_popularity():
     temp = helper.shows.merge(helper.genres, on='show_id')
@@ -15,16 +14,30 @@ def genre_popularity():
 def language_distribution():
     popular_languages = helper.spoken_languages['spoken_language_type_id'].value_counts().head(12).reset_index()
     temp = popular_languages.merge(helper.spoken_language_types, on='spoken_language_type_id')
-    return temp
+
+    x = helper.spoken_languages.merge(helper.shows, on='show_id')[['show_id', 'popularity', 'spoken_language_type_id']]
+    x = x.groupby('spoken_language_type_id')['popularity'].mean().reset_index()
+
+    return x.merge(temp, on='spoken_language_type_id')
 
 def status_analysis():
-    temp = helper.shows.merge(helper.status, on='status_id')
-    temp = temp.groupby("status_name")['show_id'].count().reset_index()
+    temp1 = helper.shows.merge(helper.status, on='status_id')
+    temp1 = temp1.groupby("status_name")['show_id'].count().reset_index()
+
+    temp2 = helper.shows.merge(helper.status, on='status_id')
+    temp2 = temp2.groupby("status_name")['popularity'].mean().reset_index()
+
+    temp = temp1.merge(temp2, on='status_name')
     return temp.rename(columns={"show_id": "count"})
 
 def type_distribution():
-    temp = helper.shows.merge(helper.types, on='type_id')
-    temp = temp.groupby("type_name")['show_id'].count().reset_index()
+    temp1 = helper.shows.merge(helper.types, on='type_id')
+    temp1 = temp1.groupby("type_name")['show_id'].count().reset_index()
+
+    temp2 = helper.shows.merge(helper.types, on='type_id')
+    temp2 = temp2.groupby("type_name")['popularity'].mean().reset_index()
+
+    temp = temp1.merge(temp2, on='type_name')
     return temp.rename(columns={"show_id": "count"})
 
 def network_analysis():
@@ -34,7 +47,9 @@ def network_analysis():
 def production_company_insights():
     temp = helper.production_companies['production_company_type_id'].value_counts().head(10).reset_index()
     temp = temp.merge(helper.production_company_types, on='production_company_type_id')
-    return temp
+
+    x = helper.production_companies.merge(helper.shows, on='show_id').groupby('production_company_type_id')['popularity'].mean().reset_index()
+    return x.merge(temp, on='production_company_type_id')
 
 def origin_country_analysis():
     top_origin_countries_index = helper.production_countries['origin_country_type_id'].value_counts().head(5).index

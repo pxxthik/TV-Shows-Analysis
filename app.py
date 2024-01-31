@@ -1,6 +1,6 @@
 import streamlit as st
 import plotly.express as px 
-import overall, element
+import overall, element, helper
 
 st.set_page_config(
     page_title="TV Shows Analysis",
@@ -10,6 +10,36 @@ st.set_page_config(
 st.sidebar.title("TV Show Analysis")
 st.sidebar.image('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8SXO99LnAGaUD-g7avPMokXrFhpl2YQVdGA&usqp=CAU')
 
+def add_posters(df):
+    poster_images = helper.get_posters(df)
+    col1, col2, col3, col4, col5 = st.columns(5)
+    with col1:
+        try:
+            st.image(f"https://image.tmdb.org/t/p/w500/{poster_images[0]}")
+        except:
+            st.error("Image Not Found")
+    with col2:
+        try:
+            st.image(f"https://image.tmdb.org/t/p/w500/{poster_images[1]}")
+        except:
+            st.error("Image Not Found")
+    with col3:
+        try:
+            st.image(f"https://image.tmdb.org/t/p/w500/{poster_images[2]}")
+        except:
+            st.error("Image Not Found")
+    with col4:
+        try:
+            st.image(f"https://image.tmdb.org/t/p/w500/{poster_images[3]}")
+        except:
+            st.error("Image Not Found")
+    with col5:
+        try:
+            st.image(f"https://image.tmdb.org/t/p/w500/{poster_images[4]}")
+        except:
+            st.error("Image Not Found")
+
+
 user_menu = st.sidebar.radio(
     'Select an Option',
     ('Overall Analysis', 'Element-wise Analysis', 'Show-wise Analysis')
@@ -18,8 +48,10 @@ user_menu = st.sidebar.radio(
 if user_menu == "Overall Analysis":
     st.title("📺 Overall TV Show Analysis")
 
+    df = overall.popular_tv_shows()
+    add_posters(df.head())
     st.header("🔥 Most Popular TV Shows")
-    st.dataframe(overall.popular_tv_shows())
+    st.dataframe(df[['name','seasons', 'original_name', 'popularity' , 'vote_count', 'vote_average']])
 
     st.header("🎭 Genres Popularity")
     df = overall.genre_popularity()
@@ -33,7 +65,7 @@ if user_menu == "Overall Analysis":
 
     st.header("💁👌 Top Language Distribution")
     df = overall.language_distribution()
-    fig=px.bar(df,x='count',y='spoken_language_name', orientation='h')
+    fig=px.bar(df,x='count',y='spoken_language_name', orientation='h', color='popularity')
     st.plotly_chart(fig)
 
     st.header("🌐 Top Network Analysis")
@@ -41,7 +73,7 @@ if user_menu == "Overall Analysis":
     fig = px.pie(df, values='count', names='network_name', hole=0.4)
     st.plotly_chart(fig)
 
-    st.header("📅🔥 Air Date Popularity Trends")
+    st.header("📅🔥 Air Date Popularity")
     df = overall.air_date_trends(pop=True)
     fig = px.line(df, x="date", y=1, color="genre_name")
     st.plotly_chart(fig)
@@ -58,17 +90,17 @@ if user_menu == "Overall Analysis":
 
     st.header("🏢 Production Company Insights")
     df = overall.production_company_insights()
-    fig = px.bar(df, x='production_company_name', y='count')
+    fig = px.bar(df, x='production_company_name', y='count', color='popularity')
     st.plotly_chart(fig)
 
     st.header("Status Analysis")
     df = overall.status_analysis()
-    fig = px.bar(df, x='status_name', y='count')
+    fig = px.bar(df, x='status_name', y='count', color='popularity')
     st.plotly_chart(fig)
     
     st.header("Type Distribution")
     df = overall.type_distribution()
-    fig = px.bar(df, x='type_name', y='count')
+    fig = px.bar(df, x='type_name', y='count', color='popularity')
     st.plotly_chart(fig)
     
 elif user_menu == "Element-wise Analysis":
@@ -91,8 +123,11 @@ elif user_menu == "Element-wise Analysis":
     with col4:
         st.metric("Avg Votes", metrics['vote_average'])
 
+    df = element.popular(elements)
+    add_posters(df.head(10))
+
     st.header("🔥 Most Popular TV Shows")
-    st.dataframe(element.popular(elements)[['Show name','Genre' , 'popularity', 'year', 'vote_average', 'Language', 'Type']])
+    st.dataframe(df[['Show name','Genre' , 'popularity', 'year', 'vote_average', 'Language', 'Type']])
 
     st.header("✍️ Top Creators")
     df = element.get_top_creators(elements)
@@ -104,7 +139,7 @@ elif user_menu == "Element-wise Analysis":
     fig = px.pie(df, values='count', names='network_name', hole=0.4)
     st.plotly_chart(fig)
 
-    st.header("📅🔥 Air Date Popularity Trends")
+    st.header("📅🔥 Air Date Popularity")
     df = element.air_date_trends(elements, pop=True)
     try:
         fig = px.line(df, x="date", y=1, color="Genre")
