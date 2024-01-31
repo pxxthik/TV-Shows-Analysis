@@ -1,5 +1,5 @@
 import numpy as np
-import helper, filter
+import helper
 
 def get_genre_names():
     genre_names = helper.genre_types['genre_name'].values.tolist()
@@ -37,8 +37,7 @@ def get_types():
     types.insert(0, "Overall")
     return types
 
-def get_metrics(element):
-    df = filter.filter_df(element)
+def get_metrics(df):
     count = df.drop_duplicates('show_id')['show_id'].count()
     popularity = round(df.drop_duplicates('show_id')['popularity'].mean(), 2)
     vote_count = df.drop_duplicates('show_id')['vote_count'].sum()
@@ -46,13 +45,11 @@ def get_metrics(element):
     metrics = {"count": count, "popularity": popularity, "vote_count": vote_count, "vote_average": vote_average}
     return metrics
 
-def popular(element):
-    df = filter.filter_df(element)
+def popular(df):
     df = df.drop_duplicates('show_id')
     return df
 
-def get_top_creators(element):
-    df = filter.filter_df(element)
+def get_top_creators(df):
     top_creators_id = helper.created_by['created_by_type_id'].value_counts().head(7).index
     top_creators = helper.created_by[helper.created_by['created_by_type_id'].isin(top_creators_id)]
 
@@ -61,8 +58,7 @@ def get_top_creators(element):
     temp = temp.merge(helper.genre_types, on='genre_type_id').merge(helper.created_by_types, on='created_by_type_id')
     return temp
 
-def air_date_trends(element, pop=False):
-    df = filter.filter_df(element)
+def air_date_trends(df, pop=False):
     if pop:
         temp = df.groupby(['date', 'Genre', 'is_first'])['popularity'].mean()
     else:
@@ -70,15 +66,13 @@ def air_date_trends(element, pop=False):
     temp = temp.unstack()
     return temp.reset_index()
 
-def top_networks(element):
-    df = filter.filter_df(element)
+def top_networks(df):
     temp_networks = df[['show_id']].merge(helper.networks, on='show_id').drop_duplicates('show_id')
 
     popular_networks = temp_networks['network_type_id'].value_counts().head(7).reset_index()
     return popular_networks.merge(helper.network_types, on='network_type_id')
 
-def origin_country_analysis(element):
-    df = filter.filter_df(element)
+def origin_country_analysis(df):
     top_origin_countries_index = helper.production_countries['origin_country_type_id'].value_counts().head(5).index
     top_origin_countries = helper.production_countries[helper.production_countries['origin_country_type_id'].isin(top_origin_countries_index)]
 
@@ -88,16 +82,14 @@ def origin_country_analysis(element):
     temp = temp.reset_index()
     return temp.melt(id_vars=['date'], value_name='count')
 
-def production_company_insights(element):
-    df = filter.filter_df(element)
+def production_company_insights(df):
     temp = df[['show_id', 'popularity']].merge(helper.production_companies, on='show_id').drop_duplicates('show_id')
     temp2 = temp['production_company_type_id'].value_counts().head(10).reset_index()
     temp = temp.merge(temp2, on='production_company_type_id')
     temp = temp.merge(helper.production_company_types, on='production_company_type_id')
     return temp[['popularity', 'count', 'production_company_name']]
 
-def status_analysis(element):
-    df = filter.filter_df(element)
+def status_analysis(df):
     temp = df.merge(helper.status, on='status_id')
     temp1 = temp.groupby("status_name")['show_id'].count().reset_index()
     temp2 = temp.groupby("status_name")['popularity'].mean().reset_index()

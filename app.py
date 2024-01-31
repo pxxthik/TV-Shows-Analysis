@@ -1,6 +1,6 @@
 import streamlit as st
 import plotly.express as px 
-import overall, element, helper
+import overall, element, helper, filter
 
 st.set_page_config(
     page_title="TV Shows Analysis",
@@ -112,7 +112,10 @@ elif user_menu == "Element-wise Analysis":
     selected_type = st.sidebar.selectbox("Select Type", element.get_types())
 
     elements = {"genre": selected_genre, "language": selected_language, "year": selected_year, "type": selected_type}
-    metrics = element.get_metrics(elements)
+
+    filtered_df = filter.filter_df(elements)
+
+    metrics = element.get_metrics(filtered_df)
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric("No of Shows", metrics['count'])
@@ -123,52 +126,53 @@ elif user_menu == "Element-wise Analysis":
     with col4:
         st.metric("Avg Votes", metrics['vote_average'])
 
-    df = element.popular(elements)
+    df = element.popular(filtered_df)
     add_posters(df.head(10))
 
     st.header("🔥 Most Popular TV Shows")
-    st.dataframe(df[['Show name','Genre' , 'popularity', 'year', 'vote_average', 'Language', 'Type']])
+    st.dataframe(df[['Show name','Genre' , 'popularity', 'year', 'vote_average', 'Language', 'Type']].head(50))
 
-    st.header("✍️ Top Creators")
-    df = element.get_top_creators(elements)
-    fig = px.bar(df, x="created_by_name", y="count", color="genre_name")
-    st.plotly_chart(fig)
-
-    st.header("🌐 Top Network Analysis")
-    df = element.top_networks(elements)
-    fig = px.pie(df, values='count', names='network_name', hole=0.4)
-    st.plotly_chart(fig)
-
-    st.header("📅🔥 Air Date Popularity")
-    df = element.air_date_trends(elements, pop=True)
-    try:
-        fig = px.line(df, x="date", y=1, color="Genre")
+    if st.button("Load more"):
+        st.header("✍️ Top Creators")
+        df = element.get_top_creators(filtered_df)
+        fig = px.bar(df, x="created_by_name", y="count", color="genre_name")
         st.plotly_chart(fig)
-    except:
-        st.write("No Data")
 
-    st.header("📅 Air Date Trends")
-    df = element.air_date_trends(elements)
-    try:
-        fig = px.line(df, x="date", y=1, color="Genre")
+        st.header("🌐 Top Network Analysis")
+        df = element.top_networks(filtered_df)
+        fig = px.pie(df, values='count', names='network_name', hole=0.4)
         st.plotly_chart(fig)
-    except:
-        st.write("No Data")
-    
-    st.header("🎌 Top Origin Country Analysis")
-    df = element.origin_country_analysis(elements)
-    fig = px.line(df, x="date", y="count", color="origin_country_name")
-    st.plotly_chart(fig)
 
-    st.header("🏢 Production Company Insights")
-    df = element.production_company_insights(elements)
-    fig = px.bar(df, x='production_company_name', y='count', text_auto='.2s', color='popularity')
-    st.plotly_chart(fig)
+        st.header("📅🔥 Air Date Popularity")
+        df = element.air_date_trends(filtered_df, pop=True)
+        try:
+            fig = px.line(df, x="date", y=1, color="Genre")
+            st.plotly_chart(fig)
+        except:
+            st.write("No Data")
 
-    st.header("Status Analysis")
-    df = element.status_analysis(elements)
-    fig = px.bar(df, x='status_name', y='count', color='popularity')
-    st.plotly_chart(fig)
+        st.header("📅 Air Date Trends")
+        df = element.air_date_trends(filtered_df)
+        try:
+            fig = px.line(df, x="date", y=1, color="Genre")
+            st.plotly_chart(fig)
+        except:
+            st.write("No Data")
+        
+        st.header("🎌 Top Origin Country Analysis")
+        df = element.origin_country_analysis(filtered_df)
+        fig = px.line(df, x="date", y="count", color="origin_country_name")
+        st.plotly_chart(fig)
+
+        st.header("🏢 Production Company Insights")
+        df = element.production_company_insights(filtered_df)
+        fig = px.bar(df, x='production_company_name', y='count', text_auto='.2s', color='popularity')
+        st.plotly_chart(fig)
+
+        st.header("Status Analysis")
+        df = element.status_analysis(filtered_df)
+        fig = px.bar(df, x='status_name', y='count', color='popularity')
+        st.plotly_chart(fig)
 
     
 elif user_menu == "Show-wise Analysis":
