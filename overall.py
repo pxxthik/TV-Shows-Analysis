@@ -47,9 +47,12 @@ def origin_country_analysis():
     temp = temp.reset_index()
     return temp.melt(id_vars=['date'], value_name='count')
 
-def air_date_trends():
+def air_date_trends(pop=False):
     temp = helper.air_dates.merge(helper.shows, on='show_id').merge(helper.genres, on='show_id').merge(helper.genre_types, on='genre_type_id')
-    temp = temp.groupby(['date', 'genre_name', 'is_first'])['show_id'].count()
+    if pop:
+        temp = temp.groupby(['date', 'genre_name', 'is_first'])['popularity'].mean()
+    else:
+        temp = temp.groupby(['date', 'genre_name', 'is_first'])['show_id'].count()
     temp = temp.unstack()
     return temp.reset_index()
 
