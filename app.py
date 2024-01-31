@@ -26,6 +26,11 @@ if user_menu == "Overall Analysis":
     fig = px.pie(df, values='popularity', names='genre_name')
     st.plotly_chart(fig)
 
+    st.header("✍️ Top Creators")
+    df = overall.top_creators()
+    fig = px.bar(df, x="created_by_name", y="count", color="genre_name")
+    st.plotly_chart(fig)
+
     st.header("💁👌 Top Language Distribution")
     df = overall.language_distribution()
     fig=px.bar(df,x='count',y='spoken_language_name', orientation='h')

@@ -52,3 +52,12 @@ def air_date_trends():
     temp = temp.groupby(['date', 'genre_name', 'is_first'])['show_id'].count()
     temp = temp.unstack()
     return temp.reset_index()
+
+def top_creators():
+    top_creators_id = helper.created_by['created_by_type_id'].value_counts().head(7).index
+    top_creators = helper.created_by[helper.created_by['created_by_type_id'].isin(top_creators_id)]
+
+    temp = top_creators.merge(helper.genres, on='show_id').groupby(['genre_type_id', 'created_by_type_id'])['show_id'].count().unstack()
+    temp = temp.reset_index().melt(id_vars=['genre_type_id'], value_name='count')
+    temp = temp.merge(helper.genre_types, on='genre_type_id').merge(helper.created_by_types, on='created_by_type_id')
+    return temp
