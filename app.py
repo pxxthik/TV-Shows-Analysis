@@ -8,7 +8,7 @@ st.set_page_config(
 )
 
 st.sidebar.title("TV Show Analysis")
-st.sidebar.image('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8SXO99LnAGaUD-g7avPMokXrFhpl2YQVdGA&usqp=CAU')
+st.sidebar.image('https://static.vecteezy.com/system/resources/previews/001/266/939/non_2x/cinema-time-for-movie-poster-vector.jpg')
 
 def add_posters(df):
     poster_images = helper.get_posters(df)
