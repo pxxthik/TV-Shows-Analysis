@@ -4,7 +4,7 @@
 This repository contains the code and data for a comprehensive data analysis project focusing on TV shows. The analysis covers 22 tables and includes insights on genre, language, and individual show characteristics.
 
 ## Live Demo
-For a live demo of the project results, please visit [here](https://tv-shows-analysis.streamlit.app/).
+For a live demo of the project results, please visit [here](https://tvshows.streamlit.app/).
 
 ## Files
 - Jupyter Notebook containing the code for data analysis
