@@ -1,6 +1,6 @@
 import streamlit as st
 import plotly.express as px 
-import overall, element, helper, filter
+import overall, element, helper, filter, tvshow
 
 st.set_page_config(
     page_title="TV Shows Analysis",
@@ -176,4 +176,52 @@ elif user_menu == "Element-wise Analysis":
 
     
 elif user_menu == "Show-wise Analysis":
-    st.title(f"🎭 {user_menu}")
+    selected_show = st.sidebar.selectbox("Select TV Show", tvshow.tv_shows())
+
+    show_info = tvshow.get_info(selected_show)
+    st.title(f"📺 {selected_show}")
+
+    col1, col2, col3, col4, col5 = st.columns(5)
+    with col1:
+        st.metric("Seasons", show_info['number_of_seasons'].values[0])
+    with col2:
+        st.metric("Episodes", show_info['number_of_episodes'].values[0])
+    with col3:
+        st.metric("Popularity", round(show_info['popularity'].values[0], 2))
+    with col4:
+        st.metric("Vote count", show_info['vote_count'].values[0])
+    with col5:
+        st.metric("Avg votes", round(show_info['vote_average'].values[0], 2))
+
+    poster_image = helper.get_posters(show_info.head(1))
+    col1, col2 = st.columns(2)
+    with col1:
+        st.dataframe(show_info[['genre_name']].drop_duplicates().rename(columns={"genre_name": "Genre"}))
+        st.write(f"Language: {show_info['spoken_language_name'].values[0]}")
+
+        st.write(f"Origin country: {show_info['origin_country_name'].values[0]}")
+        st.write(f"Episode run time: {show_info['eposide_run_time'].values[0]}")
+
+        st.caption(f"Status: {show_info['status_name'].values[0]}")
+        st.caption(f"Type: {show_info['type_name'].values[0]}")
+        st.caption(f"Network: {show_info['network_name'].values[0]}")
+        st.caption(f"Tagline: {show_info['tagline'].values[0]}")
+    with col2:
+        try:
+            st.image(f"https://image.tmdb.org/t/p/w500/{poster_image[0]}", caption=show_info['original_name'].values[0])
+        except:
+            st.error("Image Not Found")
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.write("Creators")
+        st.dataframe(show_info[['created_by_name']].drop_duplicates().rename(columns={"created_by_name": "Creators"}))
+    with col2:
+        st.write("Production Companies")
+        st.dataframe(show_info[['production_company_name']].drop_duplicates().rename(columns={"production_company_name": "Production Companies"}))
+    with col3:
+        st.write("Production Countries")
+        st.dataframe(show_info[['production_country_name']].drop_duplicates().rename(columns={"production_country_name": "Production Countries"}))
+    
+    st.subheader("Overview")
+    st.markdown(show_info['overview'].values[0])
