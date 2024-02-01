@@ -176,22 +176,22 @@ elif user_menu == "Show-wise Analysis":
     with col3:
         st.metric("Popularity", round(show_info['popularity'].values[0], 2))
     with col4:
-        st.metric("Vote count", show_info['vote_count'].values[0])
+        st.metric("Vote count", tvshow.get_vote_info(show_info, vote_count=True))
     with col5:
-        st.metric("Avg votes", round(show_info['vote_average'].values[0], 2))
+        st.metric("Avg votes", round(tvshow.get_vote_info(show_info), 2))
 
-    poster_image = helper.get_posters(show_info.head(1))
+    poster_image = helper.get_posters(show_info)
     col1, col2 = st.columns(2)
     with col1:
-        st.dataframe(show_info[['genre_name']].drop_duplicates().rename(columns={"genre_name": "Genre"}))
-        st.write(f"Language: {show_info['spoken_language_name'].values[0]}")
+        st.dataframe(tvshow.get_genre(show_info).rename(columns={"genre_name": "Genre"}))
+        st.write(f"Language: {tvshow.get_language(show_info)}")
 
-        st.write(f"Origin country: {show_info['origin_country_name'].values[0]}")
+        st.write(f"Origin country: {tvshow.get_origin_country(show_info)}")
         st.write(f"Episode run time: {show_info['eposide_run_time'].values[0]}")
 
-        st.caption(f"Status: {show_info['status_name'].values[0]}")
-        st.caption(f"Type: {show_info['type_name'].values[0]}")
-        st.caption(f"Network: {show_info['network_name'].values[0]}")
+        st.caption(f"Status: {tvshow.get_status(show_info)}")
+        st.caption(f"Type: {tvshow.get_type(show_info)}")
+        st.caption(f"Network: {tvshow.get_network(show_info)}")
         st.caption(f"Tagline: {show_info['tagline'].values[0]}")
     with col2:
         try:
@@ -202,13 +202,13 @@ elif user_menu == "Show-wise Analysis":
     col1, col2, col3 = st.columns(3)
     with col1:
         st.write("Creators")
-        st.dataframe(show_info[['created_by_name']].drop_duplicates().rename(columns={"created_by_name": "Creators"}))
+        st.dataframe(tvshow.get_creators(show_info))
     with col2:
         st.write("Production Companies")
-        st.dataframe(show_info[['production_company_name']].drop_duplicates().rename(columns={"production_company_name": "Production Companies"}))
+        st.dataframe(tvshow.get_prod_companies(show_info))
     with col3:
         st.write("Production Countries")
-        st.dataframe(show_info[['production_country_name']].drop_duplicates().rename(columns={"production_country_name": "Production Countries"}))
+        st.dataframe(tvshow.get_prod_countries(show_info))
     
     st.subheader("Overview")
     st.markdown(show_info['overview'].values[0])
