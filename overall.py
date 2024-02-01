@@ -60,16 +60,16 @@ def origin_country_analysis():
     temp = helper.air_dates.merge(temp, on='show_id')
     temp = temp.groupby(['date', 'origin_country_name'])['show_id'].count().unstack()
     temp = temp.reset_index()
-    return temp.melt(id_vars=['date'], value_name='count')
+    temp = temp.melt(id_vars=['date'], value_name='count')
+    temp['year'] = temp['date'].dt.year
+    return temp
 
-def air_date_trends(pop=False):
+def air_date_trends():
     temp = helper.air_dates.merge(helper.shows, on='show_id').merge(helper.genres, on='show_id').merge(helper.genre_types, on='genre_type_id')
-    if pop:
-        temp = temp.groupby(['date', 'genre_name', 'is_first'])['popularity'].mean()
-    else:
-        temp = temp.groupby(['date', 'genre_name', 'is_first'])['show_id'].count()
-    temp = temp.unstack()
-    return temp.reset_index()
+    temp = temp.groupby(['date', 'genre_name', 'is_first'])['show_id'].count()
+    temp = temp.unstack().reset_index()
+    temp['year'] = temp['date'].dt.year
+    return temp
 
 def top_creators():
     top_creators_id = helper.created_by['created_by_type_id'].value_counts().head(7).index

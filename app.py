@@ -73,19 +73,14 @@ if user_menu == "Overall Analysis":
     fig = px.pie(df, values='count', names='network_name', hole=0.4)
     st.plotly_chart(fig)
 
-    st.header("📅🔥 Air Date Popularity")
-    df = overall.air_date_trends(pop=True)
-    fig = px.line(df, x="date", y=1, color="genre_name")
-    st.plotly_chart(fig)
-
     st.header("📅 Air Date Trends")
     df = overall.air_date_trends()
-    fig = px.line(df, x="date", y=1, color="genre_name")
+    fig = px.line(df, x="year", y=1, color="genre_name")
     st.plotly_chart(fig)
 
     st.header("🎌 Top Origin Country Analysis")
     df = overall.origin_country_analysis()
-    fig = px.line(df, x="date", y="count", color="origin_country_name")
+    fig = px.line(df, x="year", y="count", color="origin_country_name")
     st.plotly_chart(fig)
 
     st.header("🏢 Production Company Insights")
@@ -143,25 +138,17 @@ elif user_menu == "Element-wise Analysis":
         fig = px.pie(df, values='count', names='network_name', hole=0.4)
         st.plotly_chart(fig)
 
-        st.header("📅🔥 Air Date Popularity")
-        df = element.air_date_trends(filtered_df, pop=True)
-        try:
-            fig = px.line(df, x="date", y=1, color="Genre")
-            st.plotly_chart(fig)
-        except:
-            st.write("No Data")
-
         st.header("📅 Air Date Trends")
         df = element.air_date_trends(filtered_df)
         try:
-            fig = px.line(df, x="date", y=1, color="Genre")
+            fig = px.line(df, x="year", y=1, color="Genre")
             st.plotly_chart(fig)
         except:
             st.write("No Data")
         
         st.header("🎌 Top Origin Country Analysis")
         df = element.origin_country_analysis(filtered_df)
-        fig = px.line(df, x="date", y="count", color="origin_country_name")
+        fig = px.line(df, x="year", y="count", color="origin_country_name")
         st.plotly_chart(fig)
 
         st.header("🏢 Production Company Insights")

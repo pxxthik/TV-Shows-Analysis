@@ -58,13 +58,11 @@ def get_top_creators(df):
     temp = temp.merge(helper.genre_types, on='genre_type_id').merge(helper.created_by_types, on='created_by_type_id')
     return temp
 
-def air_date_trends(df, pop=False):
-    if pop:
-        temp = df.groupby(['date', 'Genre', 'is_first'])['popularity'].mean()
-    else:
-        temp = df.groupby(['date', 'Genre', 'is_first'])['show_id'].count()
-    temp = temp.unstack()
-    return temp.reset_index()
+def air_date_trends(df):
+    temp = df.groupby(['date', 'Genre', 'is_first'])['show_id'].count()
+    temp = temp.unstack().reset_index()
+    temp['year'] = temp['date'].dt.year
+    return temp
 
 def top_networks(df):
     temp_networks = df[['show_id']].merge(helper.networks, on='show_id').drop_duplicates('show_id')
@@ -80,7 +78,9 @@ def origin_country_analysis(df):
     temp = temp.merge(df, on='show_id')
     temp = temp.groupby(['date', 'origin_country_name'])['show_id'].count().unstack()
     temp = temp.reset_index()
-    return temp.melt(id_vars=['date'], value_name='count')
+    temp = temp.melt(id_vars=['date'], value_name='count')
+    temp['year'] = temp['date'].dt.year
+    return temp
 
 def production_company_insights(df):
     temp = df[['show_id', 'popularity']].merge(helper.production_companies, on='show_id').drop_duplicates('show_id')

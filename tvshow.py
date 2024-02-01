@@ -1,7 +1,7 @@
 import helper
 
 def tv_shows():
-    return helper.shows[helper.shows['popularity'] > 70]['name'].values.tolist()
+    return helper.shows[helper.shows['popularity'] > 5]['name'].values.tolist()
 
 def get_info(tv_show):
     x = helper.shows[helper.shows['name'] == tv_show]
