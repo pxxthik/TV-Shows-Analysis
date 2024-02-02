@@ -175,24 +175,39 @@ elif user_menu == "Show-wise Analysis":
         st.metric("Episodes", show_info['number_of_episodes'].values[0])
     with col3:
         st.metric("Popularity", round(show_info['popularity'].values[0], 2))
-    with col4:
-        st.metric("Vote count", tvshow.get_vote_info(show_info, vote_count=True))
-    with col5:
-        st.metric("Avg votes", round(tvshow.get_vote_info(show_info), 2))
+    df = tvshow.get_vote_info(show_info)
+    if df.shape[0] != 0:
+        with col4:
+            st.metric("Vote count", df['vote_count'].values[0])
+        with col5:
+            st.metric("Avg votes", round(df['vote_average'].values[0], 2))
 
     poster_image = helper.get_posters(show_info)
     col1, col2 = st.columns(2)
     with col1:
-        st.dataframe(tvshow.get_genre(show_info).rename(columns={"genre_name": "Genre"}))
-        st.write(f"Language: {tvshow.get_language(show_info)}")
+        df = tvshow.get_genre(show_info).rename(columns={"genre_name": "Genre"})
+        if df.shape[0] != 0:
+            st.dataframe(df)
+        df = tvshow.get_language(show_info)
+        if df.shape[0] != 0:
+            st.write(f"Language: {df['spoken_language_name'].values[0]}")
 
-        st.write(f"Origin country: {tvshow.get_origin_country(show_info)}")
+        df = tvshow.get_origin_country(show_info)
+        if df.shape[0] != 0:
+            st.write(f"Origin country: {df['origin_country_name'].values[0]}")
         st.write(f"Episode run time: {show_info['eposide_run_time'].values[0]}")
 
-        st.caption(f"Status: {tvshow.get_status(show_info)}")
-        st.caption(f"Type: {tvshow.get_type(show_info)}")
-        st.caption(f"Network: {tvshow.get_network(show_info)}")
-        st.caption(f"Tagline: {show_info['tagline'].values[0]}")
+        df = tvshow.get_status(show_info)
+        if df.shape[0] != 0:
+            st.caption(f"Status: {df['status_name'].values[0]}")
+        df = tvshow.get_type(show_info)
+        if df.shape[0] != 0:
+            st.caption(f"Type: {df['type_name'].values[0]}")
+        df = tvshow.get_network(show_info)
+        if df.shape[0] != 0:
+            st.caption(f"Network: {df['network_name'].values[0]}")
+        if not show_info['tagline'].isna().values[0]:
+            st.caption(f"Tagline: {show_info['tagline'].values[0]}")
     with col2:
         try:
             st.image(f"https://image.tmdb.org/t/p/w500/{poster_image[0]}", caption=show_info['original_name'].values[0])
@@ -201,14 +216,20 @@ elif user_menu == "Show-wise Analysis":
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.write("Creators")
-        st.dataframe(tvshow.get_creators(show_info))
+        df = tvshow.get_creators(show_info)
+        if df.shape[0] != 0:
+            st.write("Creators")
+            st.dataframe(df)
     with col2:
-        st.write("Production Companies")
-        st.dataframe(tvshow.get_prod_companies(show_info))
+        df = tvshow.get_prod_companies(show_info)
+        if df.shape[0] != 0:
+            st.write("Production Companies")
+            st.dataframe(df)
     with col3:
-        st.write("Production Countries")
-        st.dataframe(tvshow.get_prod_countries(show_info))
+        df = tvshow.get_prod_countries(show_info)
+        if df.shape[0] != 0:
+            st.write("Production Countries")
+            st.dataframe(df)
     
     st.subheader("Overview")
     st.markdown(show_info['overview'].values[0])
